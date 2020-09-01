@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MailKit" Version="2.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SCM.Models\SCM.Models.csproj" />
     <ProjectReference Include="..\SCM.Service\SCM.Service.csproj" />
   </ItemGroup>
