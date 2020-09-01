@@ -7,6 +7,10 @@
 </div>
 <form asp-controller="PaymentManager" asp-action="GeneratePaySlip" method="post">
     <div class="form-group">
+        <label for="emailAddress" class="col-form-label">Your Email Address</label>
+        <input type="email" id="emailAddress" name="emailAddress" class="form-control" /> 
+    </div>
+    <div class="form-group">
         <label for="productId" class="col-form-label">What do you want to pay for?</label>
         <select id="productId" name="productId" class="selectpicker">
             <optgroup label="Physical Product">

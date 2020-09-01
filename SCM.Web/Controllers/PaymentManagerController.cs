@@ -15,22 +15,27 @@ using Microsoft.Extensions.Logging;
 using SCM.Interfaces;
 using SCM.Models;
 using SCM.Web.Models;
+using MailKit.Net.Smtp;
+using MimeKit;
 using F = System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace SCM.Web.Controllers
 {
     public class PaymentManagerController : Controller
     {
         private readonly ILogger<PaymentManagerController> _logger;
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly IProductService _productService;
         private readonly IOrderService _orderService;
         private readonly ICategoryService _categoryService;
-        private readonly IWebHostEnvironment _hostingEnvironment;
 
-        public PaymentManagerController(ILogger<PaymentManagerController> logger, IWebHostEnvironment hostingEnvironment,
+        public PaymentManagerController(ILogger<PaymentManagerController> logger, IConfiguration configuration, IWebHostEnvironment hostingEnvironment,
             IProductService productService, IOrderService orderService, ICategoryService categoryService)
         {
             _logger = logger;
+            _configuration = configuration;
             _hostingEnvironment = hostingEnvironment;
             _productService = productService;
             _orderService = orderService;
@@ -49,7 +54,7 @@ namespace SCM.Web.Controllers
         /// </summary>
         /// <param name="productId"></param>
         /// <returns></returns>
-        public IActionResult GeneratePaySlip(int productId)
+        public IActionResult GeneratePaySlip(int productId, string emailAddress)
         {
             Product product = null;
             Order order;
@@ -77,11 +82,11 @@ namespace SCM.Web.Controllers
 
             content.Append("<a href=\"" + Url.Action("Index", "PaymentManager") + "\">Back</a>");
 
-            productCategories =_categoryService.GetCategoriesByProductId(productId).ToList();
+            productCategories = _categoryService.GetCategoriesByProductId(productId).ToList();
             order = _orderService.GetOrders().ToList().FirstOrDefault(x => x.OrderItems.Any(x => x.ProductId == productId));
 
             //generate packing slip for all categories except membership
-            if (productCategories.Any(x => x.CategoryId != 3)) 
+            if (productCategories.Any(x => x.CategoryId != 3))
             {
                 html.Append(F.File.ReadAllText(F.Path.Combine(_hostingEnvironment.WebRootPath, "templates", "PackingSlipTemplate.html")));
 
@@ -112,7 +117,7 @@ namespace SCM.Web.Controllers
                 content.Append(html);
 
                 //for books, duplicate packing slip needed
-                if (productCategories.Any(x => x.CategoryId == 2)) 
+                if (productCategories.Any(x => x.CategoryId == 2))
                 {
                     content.Append("</hr>");
                     content.Append("<strong>For Royalty Department</strong>");
@@ -120,13 +125,13 @@ namespace SCM.Web.Controllers
                     content.Append(html);
                 }
             }
-            
+
             //if this is a membership activate/upgrade it. Email functionality pending
             if (productCategories.Any(x => x.CategoryId == 3))
             {
                 content.Append("<div class=\"row\" style=\"height:100px;\">");
                 content.Append("<div class=\"col-md-12\">");
-                
+
                 if (!order.IsMemberShipActive)
                 {
                     content.Append("Membership Activated. Please check your email for details");
@@ -138,6 +143,11 @@ namespace SCM.Web.Controllers
 
                 content.Append("</div>");
                 content.Append("</div>");
+
+                if (!string.IsNullOrEmpty(emailAddress))
+                {
+                    SendMemberShipEmail(!order.IsMemberShipActive, emailAddress);
+                }
             }
 
             if (html.Length > 0)
@@ -161,6 +171,54 @@ namespace SCM.Web.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        /// <summary>
+        /// Send Email for Membership Activation/Upgrade. Templates can be used but avoided for simplicity
+        /// </summary>
+        /// <param name="isActivated"></param>
+        /// <param name="emailAddress"></param>
+        private void SendMemberShipEmail(bool isActivated, string emailAddress)
+        {
+            string subject = "Congratulations! MemberShip Activated";
+            string body = "Membership Activated. Enjoy a whole new world of technology";
+            if (!isActivated) //its an upgrade;
+            {
+                subject = "Congratulations! MemberShip Upgraded";
+                body = "Membership Upgraded. Continue enjoying a whole new world of technology";
+            }
+
+            MimeMessage message = new MimeMessage();
+
+            MailboxAddress from = new MailboxAddress("Admin",
+            _configuration.GetValue<string>("Smtp:FromAddress"));
+            message.From.Add(from);
+
+            MailboxAddress to = new MailboxAddress("User",
+            emailAddress);
+            message.To.Add(to);
+
+            message.Subject = subject;
+
+            BodyBuilder bodyBuilder = new BodyBuilder();
+            bodyBuilder.HtmlBody = "<h1>" + body + "</h1>";
+            message.Body = bodyBuilder.ToMessageBody();
+
+            SmtpClient client = new SmtpClient();
+            try
+            {
+                client.Connect(_configuration.GetValue<string>("Smtp:Server"), _configuration.GetValue<int>("Smtp:Port"), true);
+                client.Authenticate(_configuration.GetValue<string>("Smtp:FromUser"), _configuration.GetValue<string>("Smtp:FromPassword"));
+                client.Send(message);
+                client.Disconnect(true);
+            }
+            catch (Exception ex)
+            {
+                //swallow exception if sending failed as this is just a demo
+                //Enhancement will be to log this using Logger
+            }
+            client.Dispose();
+
         }
     }
 }
