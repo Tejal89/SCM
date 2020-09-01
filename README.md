@@ -1,5 +1,6 @@
 # SCM
-A sample .Net Core application in Supply Chain management domain with  TDD approach
+A sample .Net Core application in Supply Chain management domain with  TDD approach.
+NOTE: Use Visual Studio 2019 to run the application
 1. In this application, I have tried to resolve problem statement of generating packing slip as per different criteria.
 2. .Net Core 3.1 is used (Visual Studio 2019)
 3. Decision of what action to take is based on product category. A product can be under multiple categories hence we can apply various combinations of criteria and extend the application as needed. 
