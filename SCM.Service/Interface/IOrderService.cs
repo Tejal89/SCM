@@ -7,6 +7,6 @@ namespace SCM.Interfaces
 {
     public interface IOrderService
     {
-        public IEnumerable<Order> GetOrders();       
+        IEnumerable<Order> GetOrders();       
     }
 }

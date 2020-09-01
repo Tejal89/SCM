@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace SCM.Interfaces
 {
-    public interface ICategoryRepository
+    public interface ICategoryService
     {
         IEnumerable<Category> GetCategories();
-        IEnumerable<Category> GetCategoriesByProductId(long ProductId);       
+        IEnumerable<Category> GetCategoriesByProductId(long ProductId);
     }
 }
