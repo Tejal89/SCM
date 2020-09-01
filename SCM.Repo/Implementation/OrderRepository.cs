@@ -51,7 +51,7 @@ namespace SCM.Implementation
                 OrderItems =
                 new List<OrderItem>(){
                     new OrderItem{
-                    ProductId = 2,
+                    ProductId = 5,
                     Quantity = 1,
                     UnitPrice = 1200
                     }
@@ -69,12 +69,7 @@ namespace SCM.Implementation
                     new OrderItem{
                     ProductId = 3,
                     Quantity = 1,
-                    UnitPrice = 200
-                    },
-                    new OrderItem{
-                    ProductId = 4,
-                    Quantity = 1,
-                    UnitPrice = 20
+                    UnitPrice = 200,
                     }
                 },
                 }

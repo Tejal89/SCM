@@ -51,14 +51,21 @@ namespace SCM.Web.Controllers
         /// <returns></returns>
         public IActionResult GeneratePaySlip(int productId)
         {
-            Product product = _productService.GetProductById(productId);
+            Product product = null;
+            Order order;
+            List<Product> products;
             List<Category> productCategories;
-            List<Order> productOrders;
             StringBuilder content = new StringBuilder();
             StringBuilder html = new StringBuilder();
             decimal totalAmount = 0;
-            
-            if (product == null)
+
+            products = _productService.GetProducts().ToList();
+
+            if (products != null && products.Any(x => x.ProductId == productId))
+            {
+                product = products.FirstOrDefault(x => x.ProductId == productId);
+            }
+            else
             {
                 content.Append("<div>Product not found</div>");
                 return new ContentResult
@@ -71,14 +78,12 @@ namespace SCM.Web.Controllers
             content.Append("<a href=\"" + Url.Action("Index", "PaymentManager") + "\">Back</a>");
 
             productCategories =_categoryService.GetCategoriesByProductId(productId).ToList();
-            productOrders = _orderService.GetOrders().ToList();
+            order = _orderService.GetOrders().ToList().FirstOrDefault(x => x.OrderItems.Any(x => x.ProductId == productId));
 
-            //for physical products and books, generate packing slip , and duplicate packing slip if needed
-            if (productCategories.Any(x => x.CategoryId == 1) || productCategories.Any(x => x.CategoryId == 2)) 
+            //generate packing slip for all categories except membership
+            if (productCategories.Any(x => x.CategoryId != 3)) 
             {
                 html.Append(F.File.ReadAllText(F.Path.Combine(_hostingEnvironment.WebRootPath, "templates", "PackingSlipTemplate.html")));
-
-                Order order = productOrders.FirstOrDefault(x => x.OrderItems.Any(x => x.ProductId == productId));
 
                 html = html.Replace("{ORDER}", order.InvoiceNo);
                 html = html.Replace("{SHIPTO}", order.ShippingAddress);
@@ -87,11 +92,17 @@ namespace SCM.Web.Controllers
                 StringBuilder lineItems = new StringBuilder();
                 lineItems.Append("<table style=\"width:100%;border:1px solid #000;text-align:right;\"><thead><tr><th>Item</th><th>Qty</th><th>Price</th></tr></thead><tbody>");
 
-
                 foreach (OrderItem item in order.OrderItems)
                 {
                     lineItems.Append("<tr style=\"border:1px solid #000;text-align:right;\"><td>" + product.Name + "</td><td>" + item.Quantity + "</td><td><strong>" + item.Quantity * item.UnitPrice + "</strong></td></tr>");
                     totalAmount += item.Quantity * item.UnitPrice;
+                }
+
+                //check if free items need to be appended
+                if (productCategories.Any(x => x.CategoryId == 4))
+                {
+                    product = products.FirstOrDefault(x => x.ProductId == 4);
+                    lineItems.Append("<tr style=\"border:1px solid #000;text-align:right;\"><td>" + product.Name + "</td><td>1</td><td><strong>Free</strong></td></tr>");
                 }
 
                 lineItems.Append("<tr style=\"border:1px solid #000;text-align:right;\"><td></td><td></td><td><strong>" + totalAmount + "</strong></td></tr>");
@@ -100,13 +111,33 @@ namespace SCM.Web.Controllers
                 html.Replace("{LINEITEMS}", lineItems.ToString());
                 content.Append(html);
 
-                if (productCategories.Any(x => x.CategoryId == 2)) //for books, generate  duplicate packing slip also 
+                //for books, duplicate packing slip needed
+                if (productCategories.Any(x => x.CategoryId == 2)) 
                 {
                     content.Append("</hr>");
                     content.Append("<strong>For Royalty Department</strong>");
                     content.Append("</hr>");
                     content.Append(html);
                 }
+            }
+            
+            //if this is a membership activate/upgrade it. Email functionality pending
+            if (productCategories.Any(x => x.CategoryId == 3))
+            {
+                content.Append("<div class=\"row\" style=\"height:100px;\">");
+                content.Append("<div class=\"col-md-12\">");
+                
+                if (!order.IsMemberShipActive)
+                {
+                    content.Append("Membership Activated. Please check your email for details");
+                }
+                else
+                {
+                    content.Append("Membership Upgraded for one year. Please check your email for details");
+                }
+
+                content.Append("</div>");
+                content.Append("</div>");
             }
 
             if (html.Length > 0)
