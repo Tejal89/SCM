@@ -49,7 +49,7 @@ namespace SCM.Implementation
                     ProductId = 4,
                     Name =  "First Aid",
                     SKU = "PD__PRO2", // free digital video
-                    Price = 200,
+                    Price = 20,
                     IsMembership = false,
                     IsDigital = true,
                     AccessPath = "https://www.youtube.com/watch?v=WNo8brNcVqE"
