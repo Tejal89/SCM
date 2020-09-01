@@ -27,6 +27,7 @@ namespace SCM.Web
         {
             services.AddScoped<IProductService,ProductService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<ICategoryService, CategoryService>();
 
             services.AddControllersWithViews();
         }

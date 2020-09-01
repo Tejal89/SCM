@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SCM.Interfaces;
 using SCM.Models;
 using SCM.Web.Models;
+using F = System.IO;
 
 namespace SCM.Web.Controllers
 {
@@ -17,10 +23,13 @@ namespace SCM.Web.Controllers
         private readonly IProductService _productService;
         private readonly IOrderService _orderService;
         private readonly ICategoryService _categoryService;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
-        public PaymentManagerController(ILogger<PaymentManagerController> logger, IProductService productService, IOrderService orderService,ICategoryService categoryService)
+        public PaymentManagerController(ILogger<PaymentManagerController> logger, IWebHostEnvironment hostingEnvironment,
+            IProductService productService, IOrderService orderService,ICategoryService categoryService)
         {
             _logger = logger;
+            _hostingEnvironment = hostingEnvironment;
             _productService = productService;
             _orderService = orderService;
             _categoryService = categoryService;
@@ -39,20 +48,29 @@ namespace SCM.Web.Controllers
         /// <param name="productId"></param>
         /// <returns></returns>
         public IActionResult GeneratePaySlip(int productId)
-        {
-            bool packagingSlip = false;
-            bool dupPackagingSlip = false;
-            bool sendEmail = false;
-            bool addFreeProduct = false;
+        {   
+            StringBuilder content = new StringBuilder();
+            content.Clear();
+            Product product = _productService.GetProductById(productId);
 
-
+            if (product == null)
+            {
+                content.Append("<div>Product not found</div>");
+            }
 
             List<Category> productCategories = _categoryService.GetCategoriesByProductId(productId).ToList();
+
+            if (productCategories.Any(x => x.CategoryId == 1) || productCategories.Any(x => x.CategoryId == 2)) //for physical products and books, generate packing slip 
+            {
+                content.Append(F.File.ReadAllText(F.Path.Combine(_hostingEnvironment.WebRootPath, "templates", "PackingSlipTemplate.html")));
+
+                content.Append("<a href=\"" + Url.Action("Index", "PaymentManager") + "\">Back</a>");
+            }
 
             return new ContentResult
             {
                 ContentType = "text/html",
-                Content = "<div>Hello World</div>"
+                Content = content.ToString()
             };
         }
 
