@@ -2,6 +2,7 @@
 using SCM.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SCM.Implementation
 {
@@ -54,5 +55,13 @@ namespace SCM.Implementation
                 }
             };
         }
-    }
+
+        public Product GetProductById(long ProductId)
+        {
+            if (GetProducts().Any(x => x.ProductId == ProductId))
+                return GetProducts().FirstOrDefault(x => x.ProductId == ProductId);
+
+            return null;
+        }
+        }
 }

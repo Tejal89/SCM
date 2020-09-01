@@ -7,6 +7,7 @@ namespace SCM.Interfaces
 {
     public interface IProductRepository
     {
-        IEnumerable<Product> GetProducts();       
+        IEnumerable<Product> GetProducts();
+        Product GetProductById(long ProductId);
     }
 }

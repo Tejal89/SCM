@@ -17,5 +17,10 @@ namespace SCM.Implementation
         {
             return _productRepository.GetProducts();
         }
+
+        public Product GetProductById(long ProductId)
+        {
+            return _productRepository.GetProductById(ProductId);
+        }
     }
 }
