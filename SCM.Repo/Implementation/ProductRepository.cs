@@ -18,42 +18,40 @@ namespace SCM.Implementation
                 new PhysicalProduct(){
                     ProductId = 1,
                     Name =  "Physical Product",
-                    SKU = "P_PRO1", //physical product
+                    SKU = "PRO1", //physical product
                     Price = 300,
                     Weight = 300,
-                    WeightUnit = "grams",
-                    IsDigital = false,
-                    IsMembership = false
-            },
-                new MembershipProduct(){
+                    WeightUnit = "grams"
+                },
+                new Product(){
                     ProductId = 2,
                     Name =  "Wuthering Heights",
-                    SKU = "PMB_ISBN_PRO1", //basic membership product , ISBN indicates product is a book
+                    SKU = "PRO2", //basic membership product 
                     Price = 1200,
                     Weight = 30,
                     WeightUnit = "grams",
-                    MemberShipType = MemberShipType.Basic,
-                    IsMembership = true,
-                    IsDigital = false
                 },
                 new DigitalProduct(){
                     ProductId = 3,
                     Name =  "Learning to Ski",
-                    SKU = "PD__PRO1", //digital video
+                    SKU = "PRO3", //digital video
                     Price = 200,
-                    IsMembership = false,
-                    IsDigital = true,
                     AccessPath = "https://www.youtube.com/watch?v=_yfFGDuJ2g0"
                 },
                 new DigitalProduct(){
                     ProductId = 4,
                     Name =  "First Aid",
-                    SKU = "PD__PRO2", // free digital video
+                    SKU = "PRO3", // free digital video
                     Price = 20,
-                    IsMembership = false,
-                    IsDigital = true,
                     AccessPath = "https://www.youtube.com/watch?v=WNo8brNcVqE"
                 },
+                new MemberShipProduct(){
+                    ProductId = 5,
+                    Name =  "Netflix Membership",
+                    SKU = "PRO4", //digital video
+                    Price = 200,
+                    MemberShipType = MemberShipType.Basic
+                }
             };
         }
     }

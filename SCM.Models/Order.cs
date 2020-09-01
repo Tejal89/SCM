@@ -11,7 +11,7 @@ namespace SCM.Models
         public List<OrderItem> OrderItems { get; set; }
         public string ShippingAddress { get; set; }
         public string BillingAddress { get; set; }
-
+        public bool IsMemberShipActive {get;set;}
         public DateTime? MemberShipStartDate { get; set; }
         public DateTime? MemberShipEndDate { get; set; }
     }
