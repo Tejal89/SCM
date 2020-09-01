@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SCM.Implementation;
 using System;
+using System.Linq;
 
 namespace SCM.Test
 {
@@ -24,6 +25,12 @@ namespace SCM.Test
         public void GetProducts_ReturnsNull()
         {
             Assert.IsNull(_productService.GetProducts());
+        }
+
+        [TestMethod]
+        public void GetProducts_Success()
+        {
+            Assert.AreEqual(_productService.GetProducts().Count(),4);
         }
     }
 }
