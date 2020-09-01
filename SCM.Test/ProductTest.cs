@@ -19,5 +19,11 @@ namespace SCM.Test
         {
             Assert.ThrowsException<NotImplementedException>(() => _productService.GetProducts());
         }
+
+        [TestMethod]
+        public void GetProducts_ReturnsNull()
+        {
+            Assert.IsNull(_productService.GetProducts());
+        }
     }
 }

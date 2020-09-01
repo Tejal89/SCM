@@ -15,7 +15,7 @@ namespace SCM.Implementation
 
         public IEnumerable<Product> GetProducts()
         {
-            throw new NotImplementedException();
+            return _productRepository.GetProducts();
         }
     }
 }
