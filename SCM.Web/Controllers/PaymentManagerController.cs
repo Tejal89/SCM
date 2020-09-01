@@ -1,24 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SCM.Interfaces;
 using SCM.Models;
 using SCM.Web.Models;
 using MailKit.Net.Smtp;
 using MimeKit;
-using F = System.IO;
 using Microsoft.Extensions.Configuration;
+using F = System.IO;
 
 namespace SCM.Web.Controllers
 {
