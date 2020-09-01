@@ -10,3 +10,4 @@ NOTE: Use Visual Studio 2019 to run the application
 7. Instructions related to Email. You need to change smtp settings(user and password), if you want Email functionality to work.
 	Gmail by default blocks doesn't allow this. To allow it, you will have to allow less secure apps from gmail using the link
 	https://myaccount.google.com/lesssecureapps?pli=1
+8. A try to include NuGet package has been made by using package MailKit for email sending
