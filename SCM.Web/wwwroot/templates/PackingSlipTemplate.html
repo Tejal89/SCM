@@ -1,20 +1,25 @@
-﻿
-<div class="container">
-    <div class="row" style="height:100px;">
-        <div class="col-12">
-            {ORDER}
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div class="container" style="border:1px solid #000;height:auto;text-align:right;" >
+        <div class="row" stype="height:100px;">
+            <div class="col-md-12">
+                INVOICE: {ORDER}
+            </div>
+        </div>
+        <div class="row" stype="height:200px;">
+            <div class="col-md-5">SHIP TO:{SHIPTO}</div>
+            <div class="col-md-5">BILL TO:{BILLTO}</div>
         </div>
     </div>
-    <div class="row" style="height:200px;">
-        <div class="col-6">SHIP TO:{SHIPTO}</div>
-        <div class="col-6">BILL TO:{BILLTO}</div>
+    <div class="row">
+        <div class="col-md-12">
+            {LINEITEMS}
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-12">
-        {LINEITEMS}
-    </div>
-</div>
-<div class="row">
-    <div class="col-12">{DUPLICATE}</div>
-</div>
+</body>
+</html>
